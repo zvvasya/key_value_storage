@@ -1,0 +1,19 @@
+{
+    "name": "zvvasya/key_value_storage",
+    "autoload": {
+        "psr-4": {
+            "Zvvasya\\KeyValueStorage\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Vasili Zakharko",
+            "email": "vzakharko@aristeksystems.com"
+        }
+    ],
+    "require": {
+        "amphp/http-server": "^2.1",
+        "amphp/log": "^1.1",
+        "amphp/http-server-router": "^1.0"
+    }
+}
