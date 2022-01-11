@@ -89,13 +89,14 @@ class Storage {
 				$value = fgets( $fp, $record->length + 1 );
 				clearstatcache();
 				$offset = filesize( $tmp_db );
-				print_r( [ $record->key, $offset, $record->length ] );
 				$this->indexService->add( $record->key, $offset, $record->length );
 				fwrite( $fpnew, $value );
 			}
 		}
 		fclose( $fp );
 		fclose( $fpnew );
+		rename( $this->dbDataFile, $this->dbDataFile . '_bk' . random_int( 1000, 2000 ) );
+		rename( $tmp_db, $this->dbDataFile );
 		// unlock
 	}
 
