@@ -13,8 +13,8 @@ class Storage {
 		$this->dbDataFile   = $this->dbLocation . '/data.db';
 		$this->indexService = $indexService;
 
-		if (!file_exists($this->dbDataFile)) {
-		    file_put_contents($this->dbDataFile, '');
+		if ( ! file_exists( $this->dbDataFile ) ) {
+			file_put_contents( $this->dbDataFile, '' );
 		}
 	}
 
@@ -84,11 +84,12 @@ class Storage {
 		$fp     = fopen( $this->dbDataFile, "rb+" );
 		$fpnew  = fopen( $tmp_db, "wb+" );
 		if ( $fp ) {
-			while ( $record = $this->indexService->iterate() ) {
+			foreach ( $this->indexService->iterate() as $record ) {
 				fseek( $fp, $record->offset );
 				$value = fgets( $fp, $record->length + 1 );
 				clearstatcache();
 				$offset = filesize( $tmp_db );
+				print_r( [ $record->key, $offset, $record->length ] );
 				$this->indexService->add( $record->key, $offset, $record->length );
 				fwrite( $fpnew, $value );
 			}
@@ -96,5 +97,11 @@ class Storage {
 		fclose( $fp );
 		fclose( $fpnew );
 		// unlock
+	}
+
+	public function list(): iterable {
+		foreach ( $this->indexService->iterate() as $record ) {
+			yield [ $record->key, $record->length, $this->get( $record->key ) ];
+		}
 	}
 }

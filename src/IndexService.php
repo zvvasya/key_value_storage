@@ -38,10 +38,12 @@ class IndexService {
 	}
 
 	/**
-	 * @return IndexInfo
+	 * @return iterable
 	 */
 	public function iterate(): iterable {
-		yield $this->data;
+		foreach ($this->data as $fields) {
+			yield $fields;
+		}
 	}
 
 	private function save() {

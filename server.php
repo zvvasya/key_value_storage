@@ -45,9 +45,34 @@ Amp\Loop::run( static function () {
 
 	$router->addRoute( 'GET', '/value/{key}/{value}', new CallableRequestHandler( function ( Request $request ) use ( $storage ) {
 		$args = $request->getAttribute( Router::class );
-		$storage->add( $args['key'], $args['value']  );
+		$storage->add( $args['key'], $args['value'] );
 
 		return new Response( Status::OK, [ 'content-type' => 'text/plain' ], $storage->get( $args['key'] ) );
+	} ) );
+
+	$router->addRoute( 'POST', '/value/{key}', new CallableRequestHandler( function ( Request $request ) use ( $storage ) {
+		$body = yield $this->request->getBody()->buffer();
+		$args = $request->getAttribute( Router::class );
+
+		$storage->add( $args['key'], $body );
+
+		return new Response( Status::OK, [ 'content-type' => 'text/plain' ], $storage->get( $args['key'] ) );
+	} ) );
+
+	$router->addRoute( 'GET', '/optimization', new CallableRequestHandler( function ( Request $request ) use ( $storage ) {
+
+		$storage->optimization();
+
+		return new Response( Status::OK, [ 'content-type' => 'text/plain' ], 'done' );
+	} ) );
+
+	$router->addRoute( 'GET', '/list', new CallableRequestHandler( function ( Request $request ) use ( $storage ) {
+		$html = '';
+		foreach ( $storage->list() as $item ) {
+			$html .= '<div>' . $item[0] . '(' . $item[1] . '):' . $item[2];
+		}
+
+		return new Response( Status::OK, [ 'content-type' => 'text/html' ], $html );
 	} ) );
 
 	$server = new Amp\Http\Server\Server( $servers, $router, $logger );
